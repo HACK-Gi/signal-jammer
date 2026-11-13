@@ -31,3 +31,18 @@ python rf_jammer.py --bt-only          # full BT hop range 2402-2481 MHz
 Legal note: intentional RF interference is regulated (FCC Part 15 and equivalents).
 Use only on equipment you own, in a shielded environment. A noise source radiates
 indiscriminately — it will affect every device in range.
+
+## pc_jammer.py
+WiFi deauthentication from your PC — no SDR needed. Uses a monitor-mode WiFi
+adapter + aircrack-ng to forge deauth frames. This is what actually drops a
+WiFi-controlled drone's link.
+
+```
+sudo apt install aircrack-ng
+sudo python3 pc_jammer.py scan -i wlan0        # find your drone's BSSID
+sudo python3 pc_jammer.py attack -b AA:BB:CC:DD:EE:FF
+```
+
+Note: internal laptop WiFi cards usually cannot inject — use a USB adapter
+(Alfa AWUS036ACM/ACH, TP-Link Archer T2U). For Bluetooth there is no PC-native
+path; BLE spam needs an ESP32 or Ubertooth.

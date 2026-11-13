@@ -105,9 +105,14 @@ def play_wav_fallback(path):
     """OS-level playback when sounddevice isn't installed."""
     system = sys.platform
     if system == "linux":
-        for player in ("paplay", "aplay", "pw-play"):
+        for player in ("paplay", "pw-play", "aplay", "ffplay", "mpv"):
             if shutil.which(player):
-                subprocess.run([player, path], check=False)
+                if player == "ffplay":
+                    subprocess.run([player, "-nodisp", "-autoexit", "-loglevel", "quiet", path], check=False)
+                elif player == "mpv":
+                    subprocess.run([player, "--no-video", "--really-quiet", path], check=False)
+                else:
+                    subprocess.run([player, path], check=False)
                 return True
     elif system == "darwin":
         subprocess.run(["afplay", path], check=False)
@@ -123,9 +128,10 @@ def play_wav_fallback(path):
 def play(data, device=None):
     try:
         import sounddevice as sd
-    except ImportError:
-        print("[!] sounddevice not installed — writing WAV and using OS player.")
-        print("    for direct playback:  pip install numpy sounddevice")
+    except (ImportError, OSError):
+        # OSError = PortAudio system lib missing -> WAV + OS player fallback
+        print("[!] sounddevice unavailable (missing PortAudio?) — WAV fallback.")
+        print("    direct playback: sudo apt install libportaudio2  &&  pip install sounddevice")
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
             tmp = f.name
         write_wav(tmp, data)
@@ -145,8 +151,9 @@ def play(data, device=None):
 def list_devices():
     try:
         import sounddevice as sd
-    except ImportError:
-        print("sounddevice not installed — cannot list devices.")
+    except (ImportError, OSError):
+        print("sounddevice unavailable (missing PortAudio?) — cannot list devices.")
+        print("fix: sudo apt install libportaudio2")
         return
     print(sd.query_devices())
 

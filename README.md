@@ -61,3 +61,21 @@ python3 bt_jammer.py ble-flood AA:BB:CC:DD:EE:FF    # BLE connect churn
 Limits: `flood` only affects Classic Bluetooth devices (headsets, speakers,
 car kits, older phones). BLE-only gadgets ignore L2CAP echo — raw BLE jamming
 needs NRF24L01+PA+LNA (HailHound) or btlejack hardware.
+
+## jammer.py — ALL-IN-ONE
+Single entry point wrapping all three tools. Default audio freq is 8000 Hz.
+
+```
+python3 jammer.py audio tone -f 8000 -d 15        # speaker tone
+python3 jammer.py audio sweep -f 100 --freq2 20000 -d 20
+python3 jammer.py audio bursts -f 8000 -d 60
+python3 jammer.py audio test -d 12                # speaker range test
+python3 jammer.py audio noise -d 15 --kind pink
+
+python3 jammer.py bt-scan -t 20                    # find BT device MACs
+python3 jammer.py bt-flood AA:BB:CC:DD:EE:FF -w 8  # L2CAP flood
+python3 jammer.py bt-ble AA:BB:CC:DD:EE:FF         # BLE connect churn
+
+sudo python3 jammer.py wifi-scan -i wlan0 -t 20   # find WiFi APs
+sudo python3 jammer.py wifi-attack -b AA:BB:..    # deauth flood
+```
